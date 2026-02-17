@@ -2,6 +2,8 @@ param location string = resourceGroup().location
 param appServiceAppName string = 'toylaunch${uniqueString(resourceGroup().id)}'
 @allowed(['nonprod', 'prod'])
 param environmentType string
+param storageAccountName string
+param processOrderQueueName string
 
 var appServicePlanName = 'toyLaunchPlan'
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
@@ -22,6 +24,18 @@ resource appServiceApp 'Microsoft.Web/sites@2025-03-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'StorageAccountName'
+          value: storageAccountName
+        } 
+        {
+          name: 'ProcessOrderQueueName'
+          value: processOrderQueueName
+        }
+      ]
+    }
   }   
 }
 
